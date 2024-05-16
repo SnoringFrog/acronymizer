@@ -1,7 +1,6 @@
-#/usr/bin/python3
+#!/usr/bin/python3
 
 # TODO: 
-# Could this be a Haskell thing?
 # Bash version might get around Swisslog comp's weird lag with python
 # Retina version would be cool, though options might be difficult
 #   Could use a controller program to handle options?
@@ -23,7 +22,7 @@
 import argparse
 import re
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(description="Make acronymns/initialisms from input")
 parser.add_argument("input", help="Input string to be acronymized")
 args = parser.parse_args()
 
@@ -38,20 +37,29 @@ def filter(input_string):
     return filtered
 
 def acronymize(filtered_input_string):
-    # Replace words with just their first letter
-    output = re.sub(r'([A-Za-z])[A-Za-z]*\s*', r'\1', filtered_input_string)
-
     # Replace numbers with just their first digit
-    # Yes, this could easily be in the first regex, but separating it now is probably
+    # Yes, this could easily be in the other regex, but separating it now is probably
     #   better for extra number handling down the line
-    output = re.sub(r'([0-9])[0-9]*\s*', r'\1', output)
+    output = re.sub(r'([0-9])[0-9]*\s*', r'\1', filtered_input_string)
 
-    # TODO:
-    # For now, just hardcode capitalization
-    # In the future, this should be a function that considers program options
-    output = output.upper()
+    # Replace words with just their first letter
+    output = re.sub(r'([A-Za-z])[A-Za-z]*\s*', replace, output)
+    #output = re.sub(r'([A-Za-z])[A-Za-z]*\s*', lambda x: x.group(1).upper(), filtered_input_string)
 
     return output
+
+def replace(match):
+    # TODO:
+    # For now, just hardcode capitalization
+    # In the future, handle this properly with options 
+    the_case = "upper"
+
+    if the_case == "upper":
+        return match.group(1).upper() 
+    elif the_case == "lower":
+        return match.group(1).lower()
+    else:
+        return match.group(1)
 
 # Main program 
 print(acronymize(filter(input_string)))
